@@ -35,6 +35,33 @@
             </p>
         </div>
 
+        <!-- Check if all scans are empty -->
+        {% set total_count = namespace(value=0) %}
+        {% for guru in gurus %}
+            {% for scan in guru.scans %}
+                {% set total_count.value = total_count.value + scan.count %}
+            {% endfor %}
+        {% endfor %}
+
+        <!-- Warning if no results -->
+        {% if total_count.value == 0 %}
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-amber-900 mb-2">No Scan Results</h3>
+            <p class="text-amber-800 mb-2">
+                The scanner ran but found no stocks matching the criteria today. This could be due to:
+            </p>
+            <ul class="list-disc list-inside text-amber-800 space-y-1 mb-3">
+                <li>API rate limits or data availability issues</li>
+                <li>Market conditions (no stocks meeting strict criteria)</li>
+                <li>Scanner processing a limited ticker subset ({{ scan_date }})</li>
+            </ul>
+            <p class="text-sm text-amber-700">
+                The scan will run again at the next scheduled time (4:05 PM ET weekdays).
+                Check back then or trigger a manual run via GitHub Actions.
+            </p>
+        </div>
+        {% endif %}
+
         <!-- Gurus Grid -->
         <div class="space-y-8">
             {% for guru in gurus %}
