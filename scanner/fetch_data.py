@@ -264,15 +264,19 @@ class PolygonDataFetcher:
             print("No ticker universe available")
             return pd.DataFrame()
 
-        # Filter to US stocks only
+        # Filter to US stocks only and common stock types
         universe = universe[universe['locale'] == 'us']
-        print(f"Found {len(universe)} US tickers")
+        # Filter to common stocks (exclude warrants, units, ETFs, etc.)
+        if 'type' in universe.columns:
+            universe = universe[universe['type'].isin(['CS', 'COMMON STOCK', ''])]
 
-        # For MVP: Process a manageable subset
-        # Take first 500 tickers (you can increase with paid Polygon plan)
-        tickers_to_scan = universe['ticker'].head(500).tolist()
+        print(f"Found {len(universe)} US common stocks")
 
-        print(f"Scanning {len(tickers_to_scan)} tickers...")
+        # With paid Polygon plan: scan top 3000 most liquid stocks
+        # Sort by market cap or volume if available, otherwise just take first N
+        tickers_to_scan = universe['ticker'].head(3000).tolist()
+
+        print(f"Scanning {len(tickers_to_scan)} tickers (paid plan - unlimited API)...")
 
         results = []
         failed = 0
@@ -299,13 +303,15 @@ class PolygonDataFetcher:
 
                 results.append(latest)
 
-                if (idx + 1) % 50 == 0:
-                    print(f"Processed {idx + 1}/{len(tickers_to_scan)} tickers ({len(results)} valid, {failed} failed)...")
+                # Progress every 100 tickers
+                if (idx + 1) % 100 == 0:
+                    pct = ((idx + 1) / len(tickers_to_scan)) * 100
+                    print(f"Progress: {idx + 1}/{len(tickers_to_scan)} ({pct:.1f}%) - {len(results)} valid, {failed} failed")
 
             except Exception as e:
                 failed += 1
-                if failed % 10 == 0:
-                    print(f"  {failed} failures so far (latest: {ticker})")
+                if failed % 50 == 0:
+                    print(f"  {failed} failures so far (latest: {ticker}: {str(e)[:50]})")
                 continue
 
         df = pd.DataFrame(results)

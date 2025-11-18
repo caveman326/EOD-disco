@@ -102,8 +102,9 @@ class SiteGenerator:
                         if 'date' in record:
                             record['date'] = record['date'].strftime('%Y-%m-%d')
 
-                if (idx + 1) % 20 == 0:
-                    print(f"  Fetched {idx + 1}/{len(tickers)}...")
+                if (idx + 1) % 50 == 0:
+                    pct = ((idx + 1) / len(tickers)) * 100
+                    print(f"  Charts: {idx + 1}/{len(tickers)} ({pct:.1f}%)")
 
             except Exception as e:
                 print(f"  Error fetching {ticker}: {e}")
