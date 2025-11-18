@@ -16,7 +16,8 @@ class SiteGenerator:
     """Generate static HTML site with scan results"""
 
     def __init__(self, output_dir: str = "docs"):
-        self.output_dir = Path(output_dir)
+        # Always use absolute path relative to project root
+        self.output_dir = Path(__file__).parent.parent / output_dir
         self.output_dir.mkdir(exist_ok=True)
 
         # Set up Jinja2 templates
