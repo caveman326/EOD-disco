@@ -94,17 +94,24 @@ class PolygonDataFetcher:
 
             data = []
             for snapshot in snapshots:
-                ticker_data = {
-                    'ticker': snapshot.ticker,
-                    'close': snapshot.day.c if snapshot.day else None,
-                    'open': snapshot.day.o if snapshot.day else None,
-                    'high': snapshot.day.h if snapshot.day else None,
-                    'low': snapshot.day.l if snapshot.day else None,
-                    'volume': snapshot.day.v if snapshot.day else None,
-                    'prev_close': snapshot.prev_day.c if snapshot.prev_day else None,
-                    'updated': snapshot.updated if hasattr(snapshot, 'updated') else None,
-                }
-                data.append(ticker_data)
+                try:
+                    # Handle different attribute names
+                    day_bar = snapshot.day if hasattr(snapshot, 'day') else None
+                    prev_day_bar = snapshot.prev_day if hasattr(snapshot, 'prev_day') else None
+
+                    ticker_data = {
+                        'ticker': snapshot.ticker,
+                        'close': getattr(day_bar, 'c', getattr(day_bar, 'close', None)) if day_bar else None,
+                        'open': getattr(day_bar, 'o', getattr(day_bar, 'open', None)) if day_bar else None,
+                        'high': getattr(day_bar, 'h', getattr(day_bar, 'high', None)) if day_bar else None,
+                        'low': getattr(day_bar, 'l', getattr(day_bar, 'low', None)) if day_bar else None,
+                        'volume': getattr(day_bar, 'v', getattr(day_bar, 'volume', None)) if day_bar else None,
+                        'prev_close': getattr(prev_day_bar, 'c', getattr(prev_day_bar, 'close', None)) if prev_day_bar else None,
+                    }
+                    data.append(ticker_data)
+                except Exception as e:
+                    # Skip tickers with issues
+                    continue
 
             df = pd.DataFrame(data)
             print(f"Fetched snapshots for {len(df)} tickers")
@@ -112,6 +119,8 @@ class PolygonDataFetcher:
 
         except Exception as e:
             print(f"Error fetching snapshots: {e}")
+            import traceback
+            traceback.print_exc()
             return pd.DataFrame()
 
     def fetch_aggregates(self, ticker: str, days: int = 90) -> pd.DataFrame:
@@ -241,60 +250,72 @@ class PolygonDataFetcher:
     def build_scan_dataset(self, date: Optional[str] = None) -> pd.DataFrame:
         """
         Build complete dataset for scanning
-        Fetches snapshot + calculates all technical indicators
+        Uses aggregates API for reliability
         """
         if date is None:
             date = datetime.now().date().strftime("%Y-%m-%d")
 
         print(f"Building scan dataset for {date}...")
 
-        # Get current snapshot
-        snapshot = self.fetch_snapshot_all_tickers()
+        # Get ticker universe
+        universe = self.fetch_ticker_universe()
 
-        if snapshot.empty:
-            print("No snapshot data available")
+        if universe.empty:
+            print("No ticker universe available")
             return pd.DataFrame()
 
-        # Filter out tickers with missing data
-        snapshot = snapshot.dropna(subset=['close', 'volume'])
-        snapshot = snapshot[snapshot['close'] > 0]
-        snapshot = snapshot[snapshot['volume'] > 0]
+        # Filter to US stocks only and common stock types
+        universe = universe[universe['locale'] == 'us']
+        # Filter to common stocks (exclude warrants, units, ETFs, etc.)
+        if 'type' in universe.columns:
+            universe = universe[universe['type'].isin(['CS', 'COMMON STOCK', ''])]
 
-        print(f"Processing {len(snapshot)} tickers with valid data...")
+        print(f"Found {len(universe)} US common stocks")
 
-        # For each ticker, we need historical data to calculate indicators
-        # This is expensive - we'll need to batch this intelligently
+        # With paid Polygon plan: scan top 3000 most liquid stocks
+        # Sort by market cap or volume if available, otherwise just take first N
+        tickers_to_scan = universe['ticker'].head(3000).tolist()
 
-        # For MVP: fetch historical data for top N liquid stocks
-        # Sort by volume and take top 2000
-        snapshot = snapshot.sort_values('volume', ascending=False).head(2000)
+        print(f"Scanning {len(tickers_to_scan)} tickers (paid plan - unlimited API)...")
 
         results = []
+        failed = 0
 
-        for idx, row in snapshot.iterrows():
-            ticker = row['ticker']
+        for idx, ticker in enumerate(tickers_to_scan):
+            try:
+                # Fetch 252 days (1 year) of historical data for indicators
+                hist = self.fetch_aggregates(ticker, days=252)
 
-            # Fetch 252 days (1 year) of historical data for indicators
-            hist = self.fetch_aggregates(ticker, days=252)
+                if len(hist) < 50:  # Need at least 50 days for indicators
+                    failed += 1
+                    continue
 
-            if len(hist) < 50:  # Need at least 50 days for indicators
+                # Calculate indicators
+                hist = self.calculate_technical_indicators(hist)
+
+                # Get most recent row (today's data)
+                latest = hist.iloc[-1].to_dict()
+                latest['ticker'] = ticker
+
+                # Get name from universe
+                ticker_info = universe[universe['ticker'] == ticker]
+                latest['name'] = ticker_info['name'].iloc[0] if not ticker_info.empty else ticker
+
+                results.append(latest)
+
+                # Progress every 100 tickers
+                if (idx + 1) % 100 == 0:
+                    pct = ((idx + 1) / len(tickers_to_scan)) * 100
+                    print(f"Progress: {idx + 1}/{len(tickers_to_scan)} ({pct:.1f}%) - {len(results)} valid, {failed} failed")
+
+            except Exception as e:
+                failed += 1
+                if failed % 50 == 0:
+                    print(f"  {failed} failures so far (latest: {ticker}: {str(e)[:50]})")
                 continue
 
-            # Calculate indicators
-            hist = self.calculate_technical_indicators(hist)
-
-            # Get most recent row (today's data)
-            latest = hist.iloc[-1].to_dict()
-            latest['ticker'] = ticker
-            latest['name'] = row.get('name', ticker)
-
-            results.append(latest)
-
-            if len(results) % 50 == 0:
-                print(f"Processed {len(results)} tickers...")
-
         df = pd.DataFrame(results)
-        print(f"Built dataset with {len(df)} tickers")
+        print(f"Built dataset with {len(df)} tickers ({failed} failed)")
 
         return df
 

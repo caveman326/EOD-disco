@@ -102,8 +102,9 @@ class SiteGenerator:
                         if 'date' in record:
                             record['date'] = record['date'].strftime('%Y-%m-%d')
 
-                if (idx + 1) % 20 == 0:
-                    print(f"  Fetched {idx + 1}/{len(tickers)}...")
+                if (idx + 1) % 50 == 0:
+                    pct = ((idx + 1) / len(tickers)) * 100
+                    print(f"  Charts: {idx + 1}/{len(tickers)} ({pct:.1f}%)")
 
             except Exception as e:
                 print(f"  Error fetching {ticker}: {e}")
@@ -118,24 +119,44 @@ class SiteGenerator:
 
         template = self.env.get_template('index.html')
 
-        # Prepare summary for index
-        summary = []
-        for guru_name, guru_data in scan_results.items():
-            guru_summary = {
-                'name': guru_name,
-                'link': guru_data['link'],
-                'scans': []
-            }
+        # If no results, show available scans structure
+        if not scan_results:
+            from strategies.scans import get_all_scans
+            all_scans = get_all_scans()
+            summary = []
+            for guru_name, guru_info in all_scans.items():
+                guru_summary = {
+                    'name': guru_name,
+                    'link': guru_info['link'],
+                    'scans': []
+                }
+                for scan_name, scan_config in guru_info['scans'].items():
+                    guru_summary['scans'].append({
+                        'name': scan_name,
+                        'description': scan_config.get('description', ''),
+                        'count': 0,
+                        'url': '#'
+                    })
+                summary.append(guru_summary)
+        else:
+            # Prepare summary for index
+            summary = []
+            for guru_name, guru_data in scan_results.items():
+                guru_summary = {
+                    'name': guru_name,
+                    'link': guru_data['link'],
+                    'scans': []
+                }
 
-            for scan_name, scan_data in guru_data['scans'].items():
-                guru_summary['scans'].append({
-                    'name': scan_name,
-                    'description': scan_data['description'],
-                    'count': scan_data['count'],
-                    'url': self.get_scan_url(guru_name, scan_name)
-                })
+                for scan_name, scan_data in guru_data['scans'].items():
+                    guru_summary['scans'].append({
+                        'name': scan_name,
+                        'description': scan_data['description'],
+                        'count': scan_data['count'],
+                        'url': self.get_scan_url(guru_name, scan_name)
+                    })
 
-            summary.append(guru_summary)
+                summary.append(guru_summary)
 
         html = template.render(
             gurus=summary,
@@ -228,33 +249,42 @@ class SiteGenerator:
 
         # Step 1: Fetch market data
         print("\n[1/5] Fetching market data from Polygon.io...")
-        market_data = self.fetcher.build_scan_dataset()
+        try:
+            market_data = self.fetcher.build_scan_dataset()
+        except Exception as e:
+            print(f"ERROR fetching data: {e}")
+            import traceback
+            traceback.print_exc()
+            market_data = pd.DataFrame()
 
         if market_data.empty:
-            print("ERROR: No market data available. Exiting.")
-            return
+            print("WARNING: No market data available. Generating empty scan results...")
+            # Generate empty results page
+            scan_results = {}
+            all_tickers = set()
+            chart_data = {}
+        else:
+            print(f"  Loaded data for {len(market_data)} tickers")
 
-        print(f"  Loaded data for {len(market_data)} tickers")
+            # Step 2: Run all scans
+            print("\n[2/5] Running scans...")
+            scan_results = self.run_all_scans(market_data)
 
-        # Step 2: Run all scans
-        print("\n[2/5] Running scans...")
-        scan_results = self.run_all_scans(market_data)
+            # Step 3: Collect all qualifying tickers
+            print("\n[3/5] Collecting qualifying tickers...")
+            all_tickers = set()
+            for guru_data in scan_results.values():
+                for scan_data in guru_data['scans'].values():
+                    if not scan_data['data'].empty:
+                        all_tickers.update(scan_data['data']['ticker'].tolist())
 
-        # Step 3: Collect all qualifying tickers
-        print("\n[3/5] Collecting qualifying tickers...")
-        all_tickers = set()
-        for guru_data in scan_results.values():
-            for scan_data in guru_data['scans'].values():
-                if not scan_data['data'].empty:
-                    all_tickers.update(scan_data['data']['ticker'].tolist())
+            print(f"  Found {len(all_tickers)} unique qualifying tickers")
 
-        print(f"  Found {len(all_tickers)} unique qualifying tickers")
+            # Step 4: Fetch chart data
+            print("\n[4/5] Fetching chart data...")
+            chart_data = self.fetch_chart_data(list(all_tickers), days=90)
 
-        # Step 4: Fetch chart data
-        print("\n[4/5] Fetching chart data...")
-        chart_data = self.fetch_chart_data(list(all_tickers), days=90)
-
-        # Step 5: Generate HTML pages
+        # Step 5: Generate HTML pages (always, even if empty)
         print("\n[5/5] Generating HTML pages...")
         self.generate_index_page(scan_results, scan_date)
         self.generate_scan_pages(scan_results, chart_data, scan_date)

@@ -52,8 +52,15 @@ Sign up at [polygon.io](https://polygon.io) and get your API key. Free tier work
 
 1. Go to **Settings** → **Pages**
 2. Source: **Deploy from a branch**
-3. Branch: **gh-pages** / **root**
+3. Branch: **main** (or your default branch) / **/docs**
 4. Save
+
+### 3b. Enable Workflow Permissions
+
+1. Go to **Settings** → **Actions** → **General**
+2. Scroll to **"Workflow permissions"**
+3. Select **"Read and write permissions"**
+4. Click **"Save"**
 
 ### 4. Run First Scan
 
@@ -99,12 +106,14 @@ This will:
 ### Daily Workflow
 
 1. **4:05 PM ET**: GitHub Actions triggers
-2. **Fetch Data**: Pull EOD snapshots from Polygon.io (top 2000 liquid stocks)
+2. **Fetch Data**: Pull 1-year historical data from Polygon.io for 3,000 tickers
 3. **Calculate Indicators**: SMAs, EMAs, volume ratios, trend intensity, etc.
 4. **Run Scans**: Execute all guru strategies (filters + sorting)
 5. **Fetch Charts**: Get 90-day OHLCV for qualifying stocks
 6. **Generate HTML**: Render templates with embedded chart data
-7. **Deploy**: Commit to gh-pages branch, auto-publish
+7. **Deploy**: Commit to docs/ folder, GitHub Pages auto-publishes
+
+**Runtime:** ~10-15 minutes with paid Polygon.io plan
 
 ### Scan Strategies Included
 
@@ -167,20 +176,39 @@ Uses Tailwind CSS (CDN) for styling.
 
 ## Data & API Usage
 
-### Polygon.io Limits
+### Polygon.io Configuration
 
-Free tier: 5 API calls/minute. This scanner makes:
+**Current Setup: Optimized for Paid Plan**
+
+The scanner is configured to process **3,000 tickers** per run, utilizing unlimited API calls from Polygon.io paid plans.
+
+**API Calls Per Run:**
 - 1 call for ticker universe (cached 7 days)
-- 1 call for snapshot (all tickers)
-- ~100-500 calls for historical data (qualifying stocks)
+- ~3,000 calls for historical data (1 year OHLCV per ticker)
+- ~100-500 calls for chart data (qualifying stocks only)
 
-**Total**: ~500 calls per run
+**Total**: ~3,500 calls per run (completes in 10-15 minutes with paid plan)
 
-For production, consider Polygon.io paid plans for higher limits.
+### For Free Tier Users
 
-### Optimization
+If using the free tier (5 calls/minute), edit `scanner/fetch_data.py` line 277:
 
-The scanner currently processes top 2000 most liquid stocks to stay within API limits. For full market coverage, upgrade to a paid Polygon.io plan.
+```python
+# Change from 3000 to 500 or less
+tickers_to_scan = universe['ticker'].head(500).tolist()
+```
+
+**Free tier runtime:** ~100-150 minutes (due to rate limiting)
+
+### Scaling Up Further
+
+With a paid Polygon.io plan, you can increase ticker coverage:
+
+Edit `scanner/fetch_data.py` line 277:
+```python
+# Process more tickers (5000, 10000, all, etc.)
+tickers_to_scan = universe['ticker'].head(5000).tolist()
+```
 
 ## Troubleshooting
 
@@ -204,15 +232,25 @@ Check **Actions** tab for error logs:
 
 ## Cost Breakdown
 
+**Current Setup (Paid Plan):**
+
 | Item | Cost |
 |------|------|
 | GitHub Pages hosting | $0 (free) |
-| GitHub Actions (2000 min/month) | $0 (free) |
-| Polygon.io Free Tier | $0 (limited) |
-| **Total Monthly Cost** | **$0** |
+| GitHub Actions (2000 min/month free tier) | $0 (uses ~10-15 min/day) |
+| Polygon.io Starter Plan | $29/month (unlimited API) |
+| **Total Monthly Cost** | **$29/month** |
 
-For production use with full market coverage:
-- Polygon.io Starter: $29/month (unlimited API calls)
+**Benefits of paid setup:**
+- ✅ Full market coverage (3,000+ tickers)
+- ✅ Fast execution (10-15 min vs 2+ hours)
+- ✅ Reliable data quality
+- ✅ Room to scale further
+
+**Free Tier Alternative:**
+- Reduce to 500 tickers (edit code)
+- Runtime: ~100-150 minutes
+- Monthly cost: $0
 
 ## License
 
