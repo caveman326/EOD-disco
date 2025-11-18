@@ -52,8 +52,15 @@ Sign up at [polygon.io](https://polygon.io) and get your API key. Free tier work
 
 1. Go to **Settings** → **Pages**
 2. Source: **Deploy from a branch**
-3. Branch: **gh-pages** / **root**
+3. Branch: **main** (or your default branch) / **/docs**
 4. Save
+
+### 3b. Enable Workflow Permissions
+
+1. Go to **Settings** → **Actions** → **General**
+2. Scroll to **"Workflow permissions"**
+3. Select **"Read and write permissions"**
+4. Click **"Save"**
 
 ### 4. Run First Scan
 
@@ -99,12 +106,12 @@ This will:
 ### Daily Workflow
 
 1. **4:05 PM ET**: GitHub Actions triggers
-2. **Fetch Data**: Pull EOD snapshots from Polygon.io (top 2000 liquid stocks)
+2. **Fetch Data**: Pull historical data from Polygon.io (500 tickers with free tier)
 3. **Calculate Indicators**: SMAs, EMAs, volume ratios, trend intensity, etc.
 4. **Run Scans**: Execute all guru strategies (filters + sorting)
 5. **Fetch Charts**: Get 90-day OHLCV for qualifying stocks
 6. **Generate HTML**: Render templates with embedded chart data
-7. **Deploy**: Commit to gh-pages branch, auto-publish
+7. **Deploy**: Commit to docs/ folder, GitHub Pages auto-publishes
 
 ### Scan Strategies Included
 
