@@ -1,0 +1,19 @@
+# Core Dependencies
+jinja2>=3.1.0
+pandas>=1.5.0
+pyarrow>=10.0.0
+duckdb>=0.6.0
+pyyaml>=6.0
+
+# CLI Framework
+typer>=0.7.0
+
+# Data Processing
+numpy>=1.23.0
+
+# Optional: Plotting (if used for chart generation)
+plotly>=5.11.0
+matplotlib>=3.6.0
+
+# Optional: Additional utilities
+python-dateutil>=2.8.0
