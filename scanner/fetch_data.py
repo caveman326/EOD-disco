@@ -94,17 +94,24 @@ class PolygonDataFetcher:
 
             data = []
             for snapshot in snapshots:
-                ticker_data = {
-                    'ticker': snapshot.ticker,
-                    'close': snapshot.day.c if snapshot.day else None,
-                    'open': snapshot.day.o if snapshot.day else None,
-                    'high': snapshot.day.h if snapshot.day else None,
-                    'low': snapshot.day.l if snapshot.day else None,
-                    'volume': snapshot.day.v if snapshot.day else None,
-                    'prev_close': snapshot.prev_day.c if snapshot.prev_day else None,
-                    'updated': snapshot.updated if hasattr(snapshot, 'updated') else None,
-                }
-                data.append(ticker_data)
+                try:
+                    # Handle different attribute names
+                    day_bar = snapshot.day if hasattr(snapshot, 'day') else None
+                    prev_day_bar = snapshot.prev_day if hasattr(snapshot, 'prev_day') else None
+
+                    ticker_data = {
+                        'ticker': snapshot.ticker,
+                        'close': getattr(day_bar, 'c', getattr(day_bar, 'close', None)) if day_bar else None,
+                        'open': getattr(day_bar, 'o', getattr(day_bar, 'open', None)) if day_bar else None,
+                        'high': getattr(day_bar, 'h', getattr(day_bar, 'high', None)) if day_bar else None,
+                        'low': getattr(day_bar, 'l', getattr(day_bar, 'low', None)) if day_bar else None,
+                        'volume': getattr(day_bar, 'v', getattr(day_bar, 'volume', None)) if day_bar else None,
+                        'prev_close': getattr(prev_day_bar, 'c', getattr(prev_day_bar, 'close', None)) if prev_day_bar else None,
+                    }
+                    data.append(ticker_data)
+                except Exception as e:
+                    # Skip tickers with issues
+                    continue
 
             df = pd.DataFrame(data)
             print(f"Fetched snapshots for {len(df)} tickers")
@@ -112,6 +119,8 @@ class PolygonDataFetcher:
 
         except Exception as e:
             print(f"Error fetching snapshots: {e}")
+            import traceback
+            traceback.print_exc()
             return pd.DataFrame()
 
     def fetch_aggregates(self, ticker: str, days: int = 90) -> pd.DataFrame:

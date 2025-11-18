@@ -7,6 +7,9 @@ on:
 
   workflow_dispatch:  # Allow manual trigger for testing
 
+permissions:
+  contents: write  # Required for gh-pages deployment
+
 jobs:
   scan-and-deploy:
     runs-on: ubuntu-latest
