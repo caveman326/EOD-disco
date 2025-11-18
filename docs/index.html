@@ -3,26 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EOD Market Scanner - Initializing</title>
+    <title>EOD Market Scanner</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
-    <div class="text-center max-w-2xl mx-auto px-4">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">EOD Market Scanner</h1>
-        <p class="text-lg text-gray-600 mb-8">
-            Initializing... First scan will run at 4:05 PM ET.
-        </p>
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-left">
-            <h2 class="font-semibold text-blue-900 mb-2">Setup Required</h2>
-            <ol class="text-sm text-blue-800 space-y-2 list-decimal list-inside">
-                <li>Add your Polygon.io API key to GitHub Secrets (<code class="bg-blue-100 px-1 rounded">POLYGON_API_KEY</code>)</li>
-                <li>Manually trigger the workflow in the Actions tab, or</li>
-                <li>Wait for the scheduled run at 4:05 PM ET (M-F)</li>
-            </ol>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <h1 class="text-3xl font-bold text-gray-900">EOD Market Scanner</h1>
+            <p class="mt-2 text-sm text-gray-600">
+                Scan Date: <span class="font-semibold">2025-11-18</span> |
+                Generated: 2025-11-18 20:15:51 UTC
+            </p>
         </div>
-        <p class="text-sm text-gray-500 mt-8">
-            Once the first scan completes, this page will update automatically.
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Intro -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-3">Trading Strategies from Market Gurus</h2>
+            <p class="text-gray-600">
+                Daily end-of-day scans based on proven methodologies from professional traders.
+                Click on any scan to view qualifying stocks with charts and metrics.
+            </p>
+        </div>
+
+        <!-- Check if all scans are empty -->
+        
+        
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        
+            
+                
+            
+        
+            
+                
+            
+                
+            
+        
+            
+                
+            
+        
+            
+                
+            
+        
+            
+                
+            
+                
+            
+                
+            
+        
+            
+                
+            
+        
+
+        <!-- Warning if no results -->
+        
+
+        <!-- Gurus Grid -->
+        <div class="space-y-8">
+            
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <!-- Guru Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Kristjan Kullamägi (@Qullamaggie)</h2>
+                    <a href="https://twitter.com/Qullamaggie" target="_blank" class="text-blue-100 hover:text-white text-sm underline">
+                        https://twitter.com/Qullamaggie
+                    </a>
+                </div>
+
+                <!-- Scans Grid -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <a href="kristjan_kullamägi_biggest_gainers_1m.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">Biggest Gainers 1M</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                200
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Highest percentage gains over 1 month with high trend intensity</p>
+                    </a>
+                    
+                    <a href="kristjan_kullamägi_biggest_gainers_3m.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">Biggest Gainers 3M</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                200
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Highest percentage gains over 3 months with high trend intensity</p>
+                    </a>
+                    
+                    <a href="kristjan_kullamägi_biggest_gainers_6m.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">Biggest Gainers 6M</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                200
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Highest percentage gains over 6 months with high trend intensity</p>
+                    </a>
+                    
+                    <a href="kristjan_kullamägi_high_trend_intensity.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">High Trend Intensity</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                45
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Stocks with exceptionally strong trending behavior</p>
+                    </a>
+                    
+                    <a href="kristjan_kullamägi_small_stock_momo.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">Small Stock Momo</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                37
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Lower-priced stocks with explosive momentum</p>
+                    </a>
+                    
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <!-- Guru Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Mark Minervini (@markminervini)</h2>
+                    <a href="https://twitter.com/markminervini" target="_blank" class="text-blue-100 hover:text-white text-sm underline">
+                        https://twitter.com/markminervini
+                    </a>
+                </div>
+
+                <!-- Scans Grid -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <a href="mark_minervini_trend_template.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">Trend Template</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                200
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Mark Minervini's famous trend template for strong uptrends</p>
+                    </a>
+                    
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <!-- Guru Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Stockbee (@PradeepBonde)</h2>
+                    <a href="https://twitter.com/PradeepBonde" target="_blank" class="text-blue-100 hover:text-white text-sm underline">
+                        https://twitter.com/PradeepBonde
+                    </a>
+                </div>
+
+                <!-- Scans Grid -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <a href="stockbee_4%_gainers.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">4% Gainers</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                82
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Stocks breaking out with 4%+ gains after consolidation</p>
+                    </a>
+                    
+                    <a href="stockbee_high_trend_intensity.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">High Trend Intensity</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                100
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Stocks in tight consolidation with high trend intensity</p>
+                    </a>
+                    
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <!-- Guru Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Brad Schulz (@BSchulz33868165)</h2>
+                    <a href="https://twitter.com/BSchulz33868165" target="_blank" class="text-blue-100 hover:text-white text-sm underline">
+                        https://twitter.com/BSchulz33868165
+                    </a>
+                </div>
+
+                <!-- Scans Grid -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <a href="brad_schulz_pocket_pivot.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">Pocket Pivot</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                30
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Pocket pivot buy points based on volume analysis</p>
+                    </a>
+                    
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <!-- Guru Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Ben (@PatternProfits)</h2>
+                    <a href="https://twitter.com/PatternProfits" target="_blank" class="text-blue-100 hover:text-white text-sm underline">
+                        https://twitter.com/PatternProfits
+                    </a>
+                </div>
+
+                <!-- Scans Grid -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <a href="ben_velocity.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">Velocity</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                14
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">High-momentum stocks with strong relative strength</p>
+                    </a>
+                    
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <!-- Guru Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Vo (@LignoL23)</h2>
+                    <a href="https://twitter.com/LignoL23" target="_blank" class="text-blue-100 hover:text-white text-sm underline">
+                        https://twitter.com/LignoL23
+                    </a>
+                </div>
+
+                <!-- Scans Grid -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <a href="vo_top_gainers.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">Top Gainers</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                82
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Highest percentage gainers meeting volume requirements</p>
+                    </a>
+                    
+                    <a href="vo_volume_gainers.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">Volume Gainers</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                200
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Stocks with highest relative volume</p>
+                    </a>
+                    
+                    <a href="vo_52w_high.html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">52W High</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                8
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Stocks making new 52-week highs with volume</p>
+                    </a>
+                    
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <!-- Guru Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white">Leif Soreide (@LeifSoreide)</h2>
+                    <a href="https://twitter.com/LeifSoreide" target="_blank" class="text-blue-100 hover:text-white text-sm underline">
+                        https://twitter.com/LeifSoreide
+                    </a>
+                </div>
+
+                <!-- Scans Grid -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <a href="leif_soreide_high_tight_flag_(htf).html" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-gray-900">High Tight Flag (HTF)</h3>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                94
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Stocks forming high tight flag patterns</p>
+                    </a>
+                    
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Footer Info -->
+        <div class="mt-12 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+            <h3 class="text-sm font-semibold text-yellow-900 mb-2">Disclaimer</h3>
+            <p class="text-sm text-yellow-800">
+                This tool is for educational and research purposes only. It is not financial advice.
+                Always do your own research and consult with a qualified financial advisor before making investment decisions.
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mt-12 border-t border-gray-200">
+        <p class="text-center text-sm text-gray-500">
+            Data powered by Polygon.io | Updated daily after market close
         </p>
-    </div>
+    </footer>
 </body>
 </html>
