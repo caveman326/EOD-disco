@@ -250,60 +250,66 @@ class PolygonDataFetcher:
     def build_scan_dataset(self, date: Optional[str] = None) -> pd.DataFrame:
         """
         Build complete dataset for scanning
-        Fetches snapshot + calculates all technical indicators
+        Uses aggregates API for reliability
         """
         if date is None:
             date = datetime.now().date().strftime("%Y-%m-%d")
 
         print(f"Building scan dataset for {date}...")
 
-        # Get current snapshot
-        snapshot = self.fetch_snapshot_all_tickers()
+        # Get ticker universe
+        universe = self.fetch_ticker_universe()
 
-        if snapshot.empty:
-            print("No snapshot data available")
+        if universe.empty:
+            print("No ticker universe available")
             return pd.DataFrame()
 
-        # Filter out tickers with missing data
-        snapshot = snapshot.dropna(subset=['close', 'volume'])
-        snapshot = snapshot[snapshot['close'] > 0]
-        snapshot = snapshot[snapshot['volume'] > 0]
+        # Filter to US stocks only
+        universe = universe[universe['locale'] == 'us']
+        print(f"Found {len(universe)} US tickers")
 
-        print(f"Processing {len(snapshot)} tickers with valid data...")
+        # For MVP: Process a manageable subset
+        # Take first 500 tickers (you can increase with paid Polygon plan)
+        tickers_to_scan = universe['ticker'].head(500).tolist()
 
-        # For each ticker, we need historical data to calculate indicators
-        # This is expensive - we'll need to batch this intelligently
-
-        # For MVP: fetch historical data for top N liquid stocks
-        # Sort by volume and take top 2000
-        snapshot = snapshot.sort_values('volume', ascending=False).head(2000)
+        print(f"Scanning {len(tickers_to_scan)} tickers...")
 
         results = []
+        failed = 0
 
-        for idx, row in snapshot.iterrows():
-            ticker = row['ticker']
+        for idx, ticker in enumerate(tickers_to_scan):
+            try:
+                # Fetch 252 days (1 year) of historical data for indicators
+                hist = self.fetch_aggregates(ticker, days=252)
 
-            # Fetch 252 days (1 year) of historical data for indicators
-            hist = self.fetch_aggregates(ticker, days=252)
+                if len(hist) < 50:  # Need at least 50 days for indicators
+                    failed += 1
+                    continue
 
-            if len(hist) < 50:  # Need at least 50 days for indicators
+                # Calculate indicators
+                hist = self.calculate_technical_indicators(hist)
+
+                # Get most recent row (today's data)
+                latest = hist.iloc[-1].to_dict()
+                latest['ticker'] = ticker
+
+                # Get name from universe
+                ticker_info = universe[universe['ticker'] == ticker]
+                latest['name'] = ticker_info['name'].iloc[0] if not ticker_info.empty else ticker
+
+                results.append(latest)
+
+                if (idx + 1) % 50 == 0:
+                    print(f"Processed {idx + 1}/{len(tickers_to_scan)} tickers ({len(results)} valid, {failed} failed)...")
+
+            except Exception as e:
+                failed += 1
+                if failed % 10 == 0:
+                    print(f"  {failed} failures so far (latest: {ticker})")
                 continue
 
-            # Calculate indicators
-            hist = self.calculate_technical_indicators(hist)
-
-            # Get most recent row (today's data)
-            latest = hist.iloc[-1].to_dict()
-            latest['ticker'] = ticker
-            latest['name'] = row.get('name', ticker)
-
-            results.append(latest)
-
-            if len(results) % 50 == 0:
-                print(f"Processed {len(results)} tickers...")
-
         df = pd.DataFrame(results)
-        print(f"Built dataset with {len(df)} tickers")
+        print(f"Built dataset with {len(df)} tickers ({failed} failed)")
 
         return df
 
