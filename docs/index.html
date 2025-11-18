@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EOD Market Scanner - Initializing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div class="text-center max-w-2xl mx-auto px-4">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">EOD Market Scanner</h1>
+        <p class="text-lg text-gray-600 mb-8">
+            Initializing... First scan will run at 4:05 PM ET.
+        </p>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-left">
+            <h2 class="font-semibold text-blue-900 mb-2">Setup Required</h2>
+            <ol class="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+                <li>Add your Polygon.io API key to GitHub Secrets (<code class="bg-blue-100 px-1 rounded">POLYGON_API_KEY</code>)</li>
+                <li>Manually trigger the workflow in the Actions tab, or</li>
+                <li>Wait for the scheduled run at 4:05 PM ET (M-F)</li>
+            </ol>
+        </div>
+        <p class="text-sm text-gray-500 mt-8">
+            Once the first scan completes, this page will update automatically.
+        </p>
+    </div>
+</body>
+</html>

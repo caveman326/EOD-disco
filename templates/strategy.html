@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ scan_name }} - {{ guru_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <a href="index.html" class="text-sm text-blue-600 hover:text-blue-800 mb-2 inline-block">← Back to all scans</a>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ scan_name }}</h1>
+                    <p class="text-sm text-gray-600 mt-1">
+                        {{ guru_name }} |
+                        <a href="{{ guru_link }}" target="_blank" class="text-blue-600 hover:underline">{{ guru_link }}</a>
+                    </p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Scan Date: <span class="font-semibold">{{ scan_date }}</span></p>
+                    <p class="text-xs text-gray-500">Generated: {{ generated_at }}</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Strategy Description -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h2 class="text-sm font-semibold text-blue-900 mb-1">Strategy</h2>
+            <p class="text-sm text-blue-800">{{ description }}</p>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        {% if stocks|length == 0 %}
+        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+            <p class="text-gray-500 text-lg">No stocks matched this scan criteria today.</p>
+        </div>
+        {% else %}
+        <div class="mb-4">
+            <p class="text-sm text-gray-600">Found <span class="font-semibold">{{ stocks|length }}</span> qualifying stocks</p>
+        </div>
+
+        <!-- Stock Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {% for stock in stocks %}
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <!-- Stock Header -->
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">{{ stock.ticker }}</h3>
+                        <p class="text-sm text-gray-600">{{ stock.name }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-bold text-gray-900">${{ "%.2f"|format(stock.close) }}</p>
+                        <p class="text-sm {% if stock.daily_change >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                            {% if stock.daily_change >= 0 %}+{% endif %}{{ "%.2f"|format(stock.daily_change) }}%
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <p class="text-xs text-gray-500">Volume</p>
+                        <p class="text-sm font-semibold">{{ "{:,.0f}".format(stock.volume) }}</p>
+                    </div>
+                    {% if stock.volume_ratio %}
+                    <div>
+                        <p class="text-xs text-gray-500">Vol Ratio</p>
+                        <p class="text-sm font-semibold">{{ "%.2f"|format(stock.volume_ratio) }}x</p>
+                    </div>
+                    {% endif %}
+                    {% if stock.roc %}
+                    <div>
+                        <p class="text-xs text-gray-500">ROC</p>
+                        <p class="text-sm font-semibold {% if stock.roc >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                            {{ "%.1f"|format(stock.roc) }}%
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Chart -->
+                <div class="chart-container" id="chart-{{ loop.index }}"></div>
+                <script>
+                (function() {
+                    const chartData = {{ stock.chart_data|tojson }};
+
+                    if (chartData && chartData.length > 0) {
+                        const chart = LightweightCharts.createChart(document.getElementById('chart-{{ loop.index }}'), {
+                            width: document.getElementById('chart-{{ loop.index }}').offsetWidth,
+                            height: 300,
+                            layout: {
+                                background: { color: '#ffffff' },
+                                textColor: '#333',
+                            },
+                            grid: {
+                                vertLines: { color: '#f0f0f0' },
+                                horzLines: { color: '#f0f0f0' },
+                            },
+                            timeScale: {
+                                borderColor: '#cccccc',
+                            },
+                        });
+
+                        const candlestickSeries = chart.addCandlestickSeries({
+                            upColor: '#22c55e',
+                            downColor: '#ef4444',
+                            borderUpColor: '#22c55e',
+                            borderDownColor: '#ef4444',
+                            wickUpColor: '#22c55e',
+                            wickDownColor: '#ef4444',
+                        });
+
+                        // Format data for lightweight-charts
+                        const formattedData = chartData.map(d => ({
+                            time: d.date,
+                            open: d.open,
+                            high: d.high,
+                            low: d.low,
+                            close: d.close
+                        }));
+
+                        candlestickSeries.setData(formattedData);
+                        chart.timeScale().fitContent();
+
+                        // Handle resize
+                        window.addEventListener('resize', () => {
+                            chart.resize(document.getElementById('chart-{{ loop.index }}').offsetWidth, 300);
+                        });
+                    }
+                })();
+                </script>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 border-t border-gray-200">
+        <p class="text-center text-sm text-gray-500">
+            Data powered by Polygon.io | Charts by TradingView Lightweight Charts
+        </p>
+    </footer>
+</body>
+</html>
