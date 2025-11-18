@@ -1,224 +1,231 @@
-# EOD Stock Scans
+# EOD Market Scanner
 
-A Python-based stock market scanning and analysis tool that generates static HTML websites displaying end-of-day (EOD) stock scans across multiple markets and trading strategies.
+A lightweight, automated stock market scanner that generates static HTML sites with EOD scan results from trading guru strategies. Powered by Polygon.io and deployed via GitHub Pages.
 
-## Overview
+## Architecture
 
-This project automates the process of running technical stock scans based on various trading methodologies from well-known traders and generates interactive HTML reports with charts, data tables, and market analysis. The scans cover multiple international markets and include strategies from traders like Kristjan Kullamägi, Mark Minervini, Brad Schulz, and others.
+**Static Site + GitHub Actions = Zero Hosting Costs**
+
+This project runs daily scans at market close, generates a static HTML site with embedded charts, and deploys automatically to GitHub Pages. No backend servers, no databases, no ongoing costs.
 
 ## Features
 
-- **Multi-Market Support**: Scans stocks across 14+ international markets including US, Canada, Europe, Asia-Pacific
-- **Multiple Trading Strategies**: Pre-configured scans based on proven trading methodologies
-- **Automated Chart Generation**: Creates both full-size and mini charts with technical indicators
-- **Static HTML Output**: Generates a complete static website with scan results
-- **Customizable Scans**: Easy-to-modify scan criteria and parameters
-- **Market Monitor**: Overview dashboard for market-wide analysis
+- **Trading Guru Strategies**: Pre-configured scans from Kristjan Kullamägi, Mark Minervini, Stockbee, Brad Schulz, and others
+- **Interactive Charts**: 90-day candlestick charts using TradingView's lightweight-charts library
+- **Automated Daily Updates**: GitHub Actions runs scans at 4:05 PM ET (M-F)
+- **Zero Cost**: Free hosting on GitHub Pages, free CI/CD with GitHub Actions
+- **Fast & Reliable**: Pre-rendered static HTML, no server processing
 
 ## Project Structure
 
 ```
-eodstockscans-repo/
-├── src/                    # Source code
-│   ├── scans.py           # Scan definitions and criteria
-│   ├── run_scans.py       # Scan execution logic
-│   ├── gen_site.py        # HTML site generation
-│   ├── _config.py         # Configuration utilities
-│   └── _update_data.py    # Data update utilities
-├── templates/             # Jinja2 HTML templates
-│   ├── index.html         # Main landing page
-│   ├── result_table.html  # Scan results table
-│   ├── charts.html        # Chart display pages
-│   ├── criteria.html      # Scan criteria display
-│   └── ...                # Additional templates
-├── examples/              # Example output files
-├── docs/                  # Documentation
-├── config.yaml           # Main configuration file
-├── update_scans.py       # Main execution script
-└── README.md             # This file
+EOD-disco/
+├── .github/workflows/
+│   └── daily-scan.yml          # GitHub Actions workflow (runs 4:05 PM ET)
+├── scanner/
+│   ├── fetch_data.py            # Polygon.io data integration
+│   ├── generate_site.py         # Static site generator
+│   ├── strategies/
+│   │   └── scans.py             # All guru scan strategies
+│   └── requirements.txt
+├── templates/
+│   ├── index.html               # Landing page template
+│   └── strategy.html            # Scan results page template
+└── docs/                        # Generated static site (GitHub Pages serves this)
 ```
 
-## Configuration
+## Setup
 
-The `config.yaml` file contains all major configuration settings:
+### 1. Get Polygon.io API Key
 
-- **Markets**: Supported exchanges and scaling parameters
-- **Chart Parameters**: Chart styling and technical indicators
-- **Paths**: Data storage locations
+Sign up at [polygon.io](https://polygon.io) and get your API key. Free tier works for testing.
 
-### Supported Markets
+### 2. Configure GitHub Repository
 
-- United States (NASDAQ, NYSE)
-- Canada (Toronto, TSXV, CSE)
-- United Kingdom (London)
-- Germany (XETRA)
-- France (Paris)
-- Nordic Markets (Stockholm, Oslo, Copenhagen, Helsinki)
-- Australia (Sydney)
-- Japan (Tokyo)
-- Hong Kong
-- Singapore
-- And more...
+1. Fork/clone this repository
+2. Go to **Settings** → **Secrets and variables** → **Actions**
+3. Add new repository secret:
+   - Name: `POLYGON_API_KEY`
+   - Value: Your Polygon.io API key
 
-## Scan Strategies
+### 3. Enable GitHub Pages
 
-The project includes pre-configured scans from various trading methodologies:
+1. Go to **Settings** → **Pages**
+2. Source: **Deploy from a branch**
+3. Branch: **gh-pages** / **root**
+4. Save
 
-### Kristjan Kullamägi (@Qullamaggie)
-- Biggest Gainers (1M, 3M, 6M, 12M)
-- Earnings Power (EP) with Growth
-- High Trend Intensity
-- Small Stock Momentum
+### 4. Run First Scan
 
-### Mark Minervini (@markminervini)
-- Trend Template
+**Option A: Manual Trigger (for testing)**
+1. Go to **Actions** tab
+2. Select "Daily EOD Market Scan" workflow
+3. Click "Run workflow"
 
-### Brad Schulz (@BSchulz33868165)
-- Pocket Pivot
+**Option B: Wait for Scheduled Run**
+- Runs automatically at 4:05 PM ET Monday-Friday
 
-### Stockbee (@PradeepBonde)
-- 4% Gainers
-- Breakout Scans
-- Combo Scans
+## Local Development
 
-### Ben (@PatternProfits)
-- Power of 3
-- Velocity
-- Focus
+### Install Dependencies
 
-### Ray (@RayTL_)
-- RS New High Base Pullback (5D, 1M, 3M, 6M, 12M)
-
-### And more...
-
-## Requirements
-
-This project requires Python 3.7+ and the following key dependencies:
-
-- `jinja2` - Template engine for HTML generation
-- `pandas` - Data manipulation and analysis
-- `pyarrow` - Columnar data format
-- `duckdb` - Analytical database
-- `pyyaml` - YAML configuration parsing
-- `typer` - CLI framework
-
-**Note**: A complete `requirements.txt` file should be created based on your specific environment and dependencies.
-
-## Installation
-
-1. Clone this repository:
 ```bash
-git clone https://github.com/yourusername/eodstockscans.git
-cd eodstockscans
-```
-
-2. Create a virtual environment (recommended):
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
+cd scanner
 pip install -r requirements.txt
 ```
 
-4. Configure your settings in `config.yaml`
-
-## Usage
-
-### Running Scans
-
-Execute the main script to run scans and generate the website:
+### Set API Key
 
 ```bash
-python update_scans.py
+export POLYGON_API_KEY="your_api_key_here"
 ```
 
-### Command-Line Options
-
-The script supports various command-line arguments:
+### Run Scanner Locally
 
 ```bash
-# Run scans for a specific market
-python update_scans.py --market "United States"
-
-# Run scans for multiple markets
-python update_scans.py --market "United States,Canada,United Kingdom"
-
-# Skip scan execution, only generate site
-python update_scans.py --run-scans False
-
-# Skip site generation, only run scans
-python update_scans.py --gen-site False
-
-# Run for a specific date
-python update_scans.py --date "2023-03-07"
+cd scanner
+python generate_site.py
 ```
 
-## Output
+This will:
+1. Fetch EOD data from Polygon.io
+2. Run all scan strategies
+3. Fetch 90-day OHLCV for qualifying stocks
+4. Generate HTML pages in `docs/`
+5. Open `docs/index.html` in your browser to preview
 
-The generated website includes:
+## How It Works
 
-- **Index Page**: Market overview and navigation
-- **Market Monitor**: Market-wide statistics and trends
-- **Scan Results**: Detailed tables with stock data
-- **Charts**: Interactive stock charts with technical indicators
-- **Criteria**: Display of scan criteria and parameters
+### Daily Workflow
+
+1. **4:05 PM ET**: GitHub Actions triggers
+2. **Fetch Data**: Pull EOD snapshots from Polygon.io (top 2000 liquid stocks)
+3. **Calculate Indicators**: SMAs, EMAs, volume ratios, trend intensity, etc.
+4. **Run Scans**: Execute all guru strategies (filters + sorting)
+5. **Fetch Charts**: Get 90-day OHLCV for qualifying stocks
+6. **Generate HTML**: Render templates with embedded chart data
+7. **Deploy**: Commit to gh-pages branch, auto-publish
+
+### Scan Strategies Included
+
+#### Kristjan Kullamägi (@Qullamaggie)
+- Biggest Gainers (1M, 3M, 6M)
+- High Trend Intensity
+- Small Stock Momo
+
+#### Mark Minervini (@markminervini)
+- Trend Template
+
+#### Stockbee (@PradeepBonde)
+- 4% Gainers
+- High Trend Intensity
+
+#### Brad Schulz (@BSchulz33868165)
+- Pocket Pivot
+
+#### Ben (@PatternProfits)
+- Velocity
+
+#### Vo (@LignoL23)
+- Top Gainers
+- Volume Gainers
+- 52W High
+
+#### Leif Soreide (@LeifSoreide)
+- High Tight Flag (HTF)
 
 ## Customization
 
-### Adding New Scans
+### Add New Scans
 
-Edit `src/scans.py` to add new scan definitions:
+Edit `scanner/strategies/scans.py`:
 
 ```python
-"Your Scan Name": {
-    "query": "close>10 AND volume>100000",
-    "order": "volume",
-    "limit": 100,
+"Your Guru Name": {
+    "link": "https://twitter.com/yourhandle",
+    "scans": {
+        "Your Scan Name": {
+            "description": "What this scan looks for",
+            "query": lambda df: (
+                (df['close'] > 10) &
+                (df['volume'] > 100000) &
+                (df['roc'] > 5)
+            ),
+            "order_by": "roc",
+            "limit": 100,
+        }
+    }
 }
 ```
 
-### Modifying Templates
+### Modify Templates
 
-HTML templates are located in the `templates/` directory and use Jinja2 syntax for customization.
+- `templates/index.html` - Landing page layout
+- `templates/strategy.html` - Individual scan results page
 
-### Adjusting Chart Parameters
+Uses Tailwind CSS (CDN) for styling.
 
-Modify chart settings in `config.yaml` under the `CHART_PARAMS` section.
+## Data & API Usage
 
-## Data Requirements
+### Polygon.io Limits
 
-This project expects access to stock market data. The `BASE_PATH` in `config.yaml` should point to your data directory containing:
+Free tier: 5 API calls/minute. This scanner makes:
+- 1 call for ticker universe (cached 7 days)
+- 1 call for snapshot (all tickers)
+- ~100-500 calls for historical data (qualifying stocks)
 
-- Historical price data
-- Volume data
-- Fundamental data (earnings, revenue, etc.)
-- Technical indicators
+**Total**: ~500 calls per run
 
-**Note**: Data sourcing and storage implementation is not included in this repository.
+For production, consider Polygon.io paid plans for higher limits.
+
+### Optimization
+
+The scanner currently processes top 2000 most liquid stocks to stay within API limits. For full market coverage, upgrade to a paid Polygon.io plan.
+
+## Troubleshooting
+
+### Workflow Fails
+
+Check **Actions** tab for error logs:
+- Missing API key? Add `POLYGON_API_KEY` secret
+- API rate limit? Wait 1 minute and re-run
+- No data? Check Polygon.io subscription status
+
+### Charts Not Rendering
+
+- Check browser console for JavaScript errors
+- Verify chart data is embedded in HTML (view source)
+- Try different browser
+
+### Outdated Results
+
+- Workflow only runs weekdays at 4:05 PM ET
+- Manually trigger via Actions tab if needed
+
+## Cost Breakdown
+
+| Item | Cost |
+|------|------|
+| GitHub Pages hosting | $0 (free) |
+| GitHub Actions (2000 min/month) | $0 (free) |
+| Polygon.io Free Tier | $0 (limited) |
+| **Total Monthly Cost** | **$0** |
+
+For production use with full market coverage:
+- Polygon.io Starter: $29/month (unlimited API calls)
 
 ## License
 
-Please specify your license here (e.g., MIT, Apache 2.0, GPL, etc.)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+MIT License - see LICENSE file
 
 ## Disclaimer
 
 This software is for educational and research purposes only. It is not financial advice. Always do your own research and consult with a qualified financial advisor before making investment decisions.
 
-## Acknowledgments
+## Credits
 
-This project incorporates trading strategies and scan criteria inspired by various professional traders. Please refer to their original work and give credit where appropriate.
+Scan strategies inspired by professional traders. Please refer to their original work and give credit where appropriate.
 
-## Contact
+## Support
 
-For questions or support, please open an issue on GitHub.
-
----
-
-**Note**: This is a personal development project. Please ensure you have proper data access and comply with all relevant data provider terms of service.
+Open an issue on GitHub for bugs or feature requests.
