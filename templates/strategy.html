@@ -28,6 +28,9 @@
                         {{ guru_name }} |
                         <a href="{{ guru_link }}" target="_blank" class="text-blue-600 hover:underline">{{ guru_link }}</a>
                     </p>
+                    {% if guru_description %}
+                    <p class="text-sm text-gray-500 mt-1">{{ guru_description }}</p>
+                    {% endif %}
                 </div>
                 <div class="text-right">
                     <p class="text-sm text-gray-600">Scan Date: <span class="font-semibold">{{ scan_date }}</span></p>

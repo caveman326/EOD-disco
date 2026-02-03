@@ -47,7 +47,8 @@ def get_all_scans():
 
     scans = {
         "Kristjan Kullamägi (@Qullamaggie)": {
-            "link": "https://twitter.com/Qullamaggie",
+            "link": "https://x.com/Qullamaggie",
+            "description": "Security guard turned $3,000 into $100+ million live on camera, got tapped for Market Wizards, and has never charged anyone a dime.",
             "scans": {
                 "Biggest Gainers 1M": {
                     "description": "Highest percentage gains over 1 month with high trend intensity",
@@ -112,7 +113,8 @@ def get_all_scans():
         },
 
         "Mark Minervini (@markminervini)": {
-            "link": "https://twitter.com/markminervini",
+            "link": "https://x.com/markminervini",
+            "description": "Two-time U.S. Investing Champion who set the all-time record at 334%, invented the VCP pattern every momentum trader now uses, and has more championship-winning students than any mentor alive.",
             "scans": {
                 "Trend Template": {
                     "description": "Mark Minervini's famous trend template for strong uptrends",
@@ -131,7 +133,8 @@ def get_all_scans():
         },
 
         "Stockbee (@PradeepBonde)": {
-            "link": "https://twitter.com/PradeepBonde",
+            "link": "https://x.com/PradeepBonde",
+            "description": "The quiet legend who taught Kullamägi the Episodic Pivot setup that made him nine figures—his students' P&L statements are his marketing.",
             "scans": {
                 "4% Gainers": {
                     "description": "Stocks breaking out with 4%+ gains after consolidation",
@@ -159,7 +162,8 @@ def get_all_scans():
         },
 
         "Brad Schulz (@BSchulz33868165)": {
-            "link": "https://twitter.com/BSchulz33868165",
+            "link": "https://x.com/BSchulz33868165",
+            "description": "Popular for his \"pocket pivot\" volume analysis setup. Database quant.",
             "scans": {
                 "Pocket Pivot": {
                     "description": "Pocket pivot buy points based on volume analysis",
@@ -177,8 +181,9 @@ def get_all_scans():
             }
         },
 
-        "Ben (@PatternProfits)": {
-            "link": "https://twitter.com/PatternProfits",
+        "Ben Bennett (@PatternProfits)": {
+            "link": "https://x.com/PatternProfits",
+            "description": "20-year veteran who posts his trades on Collective2 for anyone to verify and auto-copy—no $5k course, no Discord upsell, just receipts.",
             "scans": {
                 "Velocity": {
                     "description": "High-momentum stocks with strong relative strength",
@@ -196,48 +201,9 @@ def get_all_scans():
             }
         },
 
-        "Vo (@LignoL23)": {
-            "link": "https://twitter.com/LignoL23",
-            "scans": {
-                "Top Gainers": {
-                    "description": "Highest percentage gainers meeting volume requirements",
-                    "query": lambda df: (
-                        (df['close'] > 4) &
-                        (df['sma_50_volume'] > 200000) &
-                        (df['avg_dollar_volume_50'] > 2000000) &
-                        (df['roc'] > 4)
-                    ),
-                    "order_by": "roc",
-                    "limit": 100,
-                },
-                "Volume Gainers": {
-                    "description": "Stocks with highest relative volume",
-                    "query": lambda df: (
-                        (df['close'] > 4) &
-                        (df['sma_50_volume'] > 200000) &
-                        (df['avg_dollar_volume_50'] > 2000000) &
-                        (df['roc'] > 0)
-                    ),
-                    "order_by": "volume_ratio",
-                    "limit": 200,
-                },
-                "52W High": {
-                    "description": "Stocks making new 52-week highs with volume",
-                    "query": lambda df: (
-                        (df['close'] > 4) &
-                        (df['sma_50_volume'] > 200000) &
-                        (df['avg_dollar_volume_50'] > 2000000) &
-                        (df['close'] >= df['max_252'] * 0.999) &  # At or near 52w high
-                        (df['volume_ratio'] > 1)
-                    ),
-                    "order_by": "volume_ratio",
-                    "limit": 200,
-                },
-            }
-        },
-
         "Leif Soreide (@LeifSoreide)": {
-            "link": "https://twitter.com/LeifSoreide",
+            "link": "https://x.com/LeifSoreide",
+            "description": "Mastered one pattern (High Tight Flag), rode it to win the 2019 U.S. Investing Championship, and now his students are winning it too.",
             "scans": {
                 "High Tight Flag (HTF)": {
                     "description": "Stocks forming high tight flag patterns",

@@ -72,6 +72,9 @@
                     <a href="{{ guru.link }}" target="_blank" class="text-blue-100 hover:text-white text-sm underline">
                         {{ guru.link }}
                     </a>
+                    {% if guru.description %}
+                    <p class="text-blue-100 text-sm mt-2">{{ guru.description }}</p>
+                    {% endif %}
                 </div>
 
                 <!-- Scans Grid -->

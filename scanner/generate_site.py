@@ -46,6 +46,7 @@ class SiteGenerator:
             print(f"\n{guru_name}")
             results[guru_name] = {
                 'link': guru_info['link'],
+                'description': guru_info.get('description', ''),
                 'scans': {}
             }
 
@@ -129,6 +130,7 @@ class SiteGenerator:
                 guru_summary = {
                     'name': guru_name,
                     'link': guru_info['link'],
+                    'description': guru_info.get('description', ''),
                     'scans': []
                 }
                 for scan_name, scan_config in guru_info['scans'].items():
@@ -146,6 +148,7 @@ class SiteGenerator:
                 guru_summary = {
                     'name': guru_name,
                     'link': guru_data['link'],
+                    'description': guru_data.get('description', ''),
                     'scans': []
                 }
 
@@ -213,6 +216,7 @@ class SiteGenerator:
                 html = template.render(
                     guru_name=guru_name,
                     guru_link=guru_data['link'],
+                    guru_description=guru_data.get('description', ''),
                     scan_name=scan_name,
                     description=scan_data['description'],
                     stocks=stocks,
